@@ -45,7 +45,7 @@ module DDNSSD
     end
 
     def addressable?
-      @host_network || @ipv4_address != "" || @ipv6_address != ""
+      @host_network || (!@ipv4_address.nil? && @ipv4_address != "") || (!@ipv6_address.nil? && @ipv6_address != "")
     end
 
     def host_port_for(spec)
