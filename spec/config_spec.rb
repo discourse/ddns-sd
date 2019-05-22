@@ -8,9 +8,9 @@ describe DDNSSD::Config do
 
   let(:base_env) do
     {
-      "DDNSSD_HOSTNAME"    => "speccy",
+      "DDNSSD_HOSTNAME" => "speccy",
       "DDNSSD_BASE_DOMAIN" => "example.com",
-      "DDNSSD_BACKEND"     => "test_queue"
+      "DDNSSD_BACKEND" => "test_queue"
     }
   end
   # Work around problem where you can't reference the same let in a nested
@@ -283,6 +283,17 @@ describe DDNSSD::Config do
 
       context "with some gibberish string" do
         let(:env) { base_env.merge("DDNSSD_HOST_IP_ADDRESS" => "ermahgerd") }
+
+        it "freaks out" do
+          expect { config }.to raise_error(DDNSSD::Config::InvalidEnvironmentError)
+        end
+      end
+
+      context "with some gibberish string and DDNSSD_IPV6_ONLY enabled" do
+        let(:env) { base_env.merge(
+          "DDNSSD_HOST_IP_ADDRESS" => "ermahgerd",
+          "DDNSSD_IPV6_ONLY" => "true"
+        ) }
 
         it "freaks out" do
           expect { config }.to raise_error(DDNSSD::Config::InvalidEnvironmentError)
