@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'resolv'
 
 require 'ddnssd/dns_record'
@@ -101,7 +102,7 @@ module DDNSSD
     end
 
     def srv_instance_rdn(proto)
-      name = @labels["instance"] || @container.name
+      name = (@labels["instance"] || @container.name).dup
       name.force_encoding("UTF-8")
 
       if name.bytesize == 0

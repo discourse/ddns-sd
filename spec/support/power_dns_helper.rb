@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PowerDNSHelper
   def power_dns_test_config
     {

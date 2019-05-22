@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 exec(*(["bundle", "exec", $PROGRAM_NAME] + ARGV)) if ENV['BUNDLE_GEMFILE'].nil?
 
 task default: :test

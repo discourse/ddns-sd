@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require_relative './spec_helper.rb'
 
 require 'filtered_debug_logger'

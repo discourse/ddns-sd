@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'pp'
 
 RSpec::Matchers.define :have_A_record do |relrrname, address|

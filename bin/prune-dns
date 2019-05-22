@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+# frozen_string_literal: true
+
 # Given a list of EC2 server IDs that are running, remove SRV records that
 # don't belong to any of those servers.
 

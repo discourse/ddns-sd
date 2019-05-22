@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'frankenstein/server'
 require 'logger'
 require 'ipaddr'

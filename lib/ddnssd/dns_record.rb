@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'resolv'
 require 'freedom_patches/dns_name'
 require 'ddnssd/error'

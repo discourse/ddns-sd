@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+# frozen_string_literal: true
+
 # Display info about all services found in DNS with an intance
 # name matching a given argument. Assumes PowerDNS as the backend.
 

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'resolv'
 
 class Resolv::DNS::Name

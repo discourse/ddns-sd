@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'bundler'
 Bundler.setup(:default, :development)
 require 'rspec/core'
@@ -17,7 +18,7 @@ class ListIncompletelyCoveredFiles
       puts
       puts "Files with incomplete test coverage:"
       incompletes.each do |f|
-        printf "    %2.02f%%    %s", f.covered_percent, f.filename
+        printf "    %2.02f%%    %s\n", f.covered_percent, f.filename
       end
       puts; puts
     end

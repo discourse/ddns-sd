@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'ddnssd/service_instance'
 
 module DDNSSD

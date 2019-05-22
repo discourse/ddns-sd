@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'azure_mgmt_dns'
 require 'shellwords'
 
