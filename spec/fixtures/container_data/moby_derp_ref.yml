@@ -1,0 +1,14 @@
+Name: moby_derp_ref
+HostConfig:
+  PortBindings: {}
+Config:
+  Labels:
+    org.discourse.service._http.port: "80"
+    org.hezmatt.moby-derp.root-container-id: asdfasdfbasiccontainer
+  ExposedPorts:
+    80/tcp: {}
+NetworkSettings:
+  Ports: {}
+  Networks: {}
+id: asdfasdfmobyderpref
+

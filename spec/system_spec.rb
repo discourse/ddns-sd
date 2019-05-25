@@ -170,7 +170,7 @@ describe DDNSSD::System do
         it "recreates records for containers that had crashed" do
           # crashed containers are ones that :died, but never :stopped.
           allow(logger).to receive(:warn).with("DDNSSD::System")
-          crashed_container = DDNSSD::Container.new(docker_container, system.config)
+          crashed_container = DDNSSD::Container.new(docker_container, system.config, system)
           crashed_container.crashed = true
           system.instance_variable_get(:@containers)["asdfasdfpub80"] = crashed_container
 
@@ -178,8 +178,8 @@ describe DDNSSD::System do
           expect(crashed_container).to receive(:suppress_records).with(mock_backend)
           expect(crashed_container).to_not receive(:publish_records)
 
-          new_ddnssd_container = DDNSSD::Container.new(docker_container, system.config)
-          allow(DDNSSD::Container).to receive(:new).with(docker_container, system.config).and_return(new_ddnssd_container)
+          new_ddnssd_container = DDNSSD::Container.new(docker_container, system.config, system)
+          allow(DDNSSD::Container).to receive(:new).with(docker_container, system.config, system).and_return(new_ddnssd_container)
           expect(new_ddnssd_container).to receive(:publish_records).with(mock_backend)
 
           system.run
@@ -189,10 +189,10 @@ describe DDNSSD::System do
       end
 
       context 'mocked DDNSSD::Container' do
-        let(:ddnssd_container) { DDNSSD::Container.new(docker_container, system.config) }
+        let(:ddnssd_container) { DDNSSD::Container.new(docker_container, system.config, system) }
 
         before(:each) do
-          allow(DDNSSD::Container).to receive(:new).with(docker_container, system.config).and_return(ddnssd_container)
+          allow(DDNSSD::Container).to receive(:new).with(docker_container, system.config, system).and_return(ddnssd_container)
         end
 
         describe ":started" do
@@ -465,7 +465,7 @@ describe DDNSSD::System do
     context "when DDNSSD_RECORD_TTL has changed" do
       let(:env) { base_env.merge("DDNSSD_RECORD_TTL" => "42") }
       let(:dns_records) { dns_record_fixtures("published_port80") }
-      let(:docker_containers) { container_fixtures("published_port80").map { |dc| DDNSSD::Container.new(dc, system.config) } }
+      let(:docker_containers) { container_fixtures("published_port80").map { |dc| DDNSSD::Container.new(dc, system.config, system) } }
 
       it "removes the records with the wrong TTL and adds new ones with the right TTL" do
         dns_record_fixture("published_port80").each do |rr|

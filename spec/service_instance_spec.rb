@@ -1,5 +1,6 @@
 require_relative './spec_helper'
 
+require 'ddnssd/system'
 require 'ddnssd/config'
 require 'ddnssd/dns_record'
 require 'ddnssd/service_instance'
@@ -23,7 +24,8 @@ describe DDNSSD::ServiceInstance do
       logger: logger
     )
   end
-  let(:container) { DDNSSD::Container.new(docker_container, config) }
+  let(:system)    { instance_double(DDNSSD::System) }
+  let(:container) { DDNSSD::Container.new(docker_container, config, system) }
 
   let(:instance) { DDNSSD::ServiceInstance.new("http", labels, container, config) }
 

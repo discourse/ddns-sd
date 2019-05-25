@@ -6,10 +6,11 @@ module DDNSSD
 
     attr_accessor :stopped, :crashed
 
-    def initialize(docker_data, system_config)
+    def initialize(docker_data, system_config, system)
       @id = docker_data.id
 
       @config = system_config
+      @system = system
       @logger = @config.logger
 
       @name = (docker_data.info["Name"] || docker_data.info["Names"].first).sub(/\A\//, '')
@@ -22,14 +23,29 @@ module DDNSSD
       if @host_network
         @ipv4_address = nil
         @ipv6_address = nil
-        @exposed_ports = nil
-        @published_ports = nil
+      elsif root_id = docker_data.info["Config"]["Labels"]["org.hezmatt.moby-derp.root-container-id"]
+        @logger.info(progname) { "Using #{root_id} as source of network address information" }
+        if @id == root_id
+          #:nocov:
+          raise InvalidContainerError,
+                "root-container-id (#{@id.inspect}) points to us!"
+          #:nocov:
+        end
+        root_container = system.container(root_id)
+        @ipv4_address = root_container.ipv4_address
+        @ipv6_address = root_container.ipv6_address
       else
         @ipv4_address = docker_data.info["NetworkSettings"]["IPAddress"]
         @ipv6_address = docker_data.info["NetworkSettings"]["GlobalIPv6Address"]
-        @exposed_ports   = docker_data.info["Config"]["ExposedPorts"] || {}
-        @published_ports = docker_data.info["NetworkSettings"]["Ports"]
       end
+
+      @exposed_ports   = docker_data.info["Config"]["ExposedPorts"] || {}
+      @published_ports = docker_data.info["NetworkSettings"]["Ports"]
+
+      @logger.debug(progname) { "IPv4 address: #{@ipv4_address.inspect}" }
+      @logger.debug(progname) { "IPv6 address: #{@ipv6_address.inspect}" }
+      @logger.debug(progname) { "Exposed ports: #{@exposed_ports.inspect}" }
+      @logger.debug(progname) { "Published ports: #{@published_ports.inspect}" }
     end
 
     def short_id

@@ -69,7 +69,7 @@ module DDNSSD
               @logger.warn(progname) { "Container #{item.last} that didn't stop cleanly has restarted. Recreating its records." }
               @backends.each { |backend| @containers[item.last].suppress_records(backend) }
             end
-            @containers[item.last] = DDNSSD::Container.new(docker_container, @config)
+            @containers[item.last] = DDNSSD::Container.new(docker_container, @config, self)
             @backends.each { |backend| @containers[item.last].publish_records(backend) }
           end
         when :stopped
@@ -116,6 +116,16 @@ module DDNSSD
       @queue.push([:terminate])
       @watcher.shutdown
       @metrics_server.shutdown if @metrics_server
+    end
+
+    def container(id)
+      begin
+        with_docker_api_version "1.36" do
+          DDNSSD::Container.new(Docker::Container.get(id, {}, docker_connection), @config, self)
+        end
+      rescue Docker::Error::NotFoundError
+        nil
+      end
     end
 
     private
@@ -180,13 +190,8 @@ module DDNSSD
       # should need to be.
       #
       # Thanks, Docker!
-      Docker::Container.all({}, docker_connection).each do |c|
-        begin
-          @containers[c.id] = DDNSSD::Container.new(Docker::Container.get(c.id, {}, docker_connection), @config)
-        rescue Docker::Error::NotFoundError
-          nil
-        end
-      end
+      Docker::Container.all({}, docker_connection).each { |c| @containers[c.id] = container(c.id) }
+      @containers.delete_if { |k, v| v.nil? }
     end
 
     def docker_connection

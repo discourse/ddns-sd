@@ -1,6 +1,6 @@
 Name: pub22
 Config:
-  Labels: []
+  Labels: {}
   ExposedPorts:
     22/tcp: {}
 NetworkSettings:
