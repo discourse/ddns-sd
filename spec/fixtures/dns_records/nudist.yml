@@ -1,0 +1,28 @@
+- name: asdfasdfnudi.speccy
+  type: :A
+  ttl: 60
+  data:
+  - 172.17.0.42
+- name: asdfasdfnudi.speccy
+  type: :AAAA
+  ttl: 60
+  data:
+  - 2001:db8::42
+- name: nudist._http._tcp
+  type: :SRV
+  ttl: 60
+  data:
+  - 0
+  - 0
+  - 80
+  - asdfasdfnudi.speccy
+- name: nudist._http._tcp
+  type: :TXT
+  ttl: 60
+  data:
+  - ""
+- name: _http._tcp
+  type: :PTR
+  ttl: 60
+  data:
+  - nudist._http._tcp

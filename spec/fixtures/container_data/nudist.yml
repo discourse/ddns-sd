@@ -1,0 +1,15 @@
+Name: nudist
+Config:
+  Labels:
+    org.discourse.service._http.port: "80"
+    org.discourse.service.ignore-expose: 'true'
+  ExposedPorts: {}
+NetworkSettings:
+  Ports: {}
+  Networks:
+    bridge:
+      Gateway: 172.17.0.1
+      GlobalIPv6Address: '2001:db8::42'
+      IPAddress: 172.17.0.42
+id: asdfasdfnudist
+

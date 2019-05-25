@@ -210,6 +210,37 @@ describe DDNSSD::Container do
     end
   end
 
+  context "ignore-expose container with single label set" do
+    let(:container_name) { "nudist" }
+
+    describe "#port_exposed?" do
+      it "lists all ports as exposed" do
+        expect(container.port_exposed?("80/tcp")).to be(true)
+        expect(container.port_exposed?("31337/haxx")).to be(true)
+      end
+    end
+
+    describe "#host_port_for" do
+      it "has no port mapping for any ports" do
+        expect(container.host_port_for("80/tcp")).to be(nil)
+        expect(container.host_port_for("31337/haxx")).to be(nil)
+      end
+    end
+
+    describe "#host_address_for" do
+      it "has no address mapping for any ports" do
+        expect(container.host_address_for("80/tcp")).to be(nil)
+        expect(container.host_address_for("31337/haxx")).to be(nil)
+      end
+    end
+
+    describe "#dns_records" do
+      it "returns a DNS record set" do
+        expect(container.dns_records).to eq(dns_record_fixtures("nudist"))
+      end
+    end
+  end
+
   context "published-port container with label set" do
     let(:container_name) { "published_port80" }
 

@@ -39,8 +39,9 @@ module DDNSSD
         @ipv6_address = docker_data.info["NetworkSettings"]["GlobalIPv6Address"]
       end
 
-      @exposed_ports   = docker_data.info["Config"]["ExposedPorts"] || {}
-      @published_ports = docker_data.info["NetworkSettings"]["Ports"]
+      @exposed_ports    = docker_data.info["Config"]["ExposedPorts"] || {}
+      @published_ports  = docker_data.info["NetworkSettings"]["Ports"]
+      @expose_all_ports = !!(docker_data.info["Config"]["Labels"]["org.discourse.service.ignore-expose"] =~ /\Aye?s?|tr?u?e?|on|1\z/i)
 
       @logger.debug(progname) { "IPv4 address: #{@ipv4_address.inspect}" }
       @logger.debug(progname) { "IPv6 address: #{@ipv6_address.inspect}" }
@@ -57,7 +58,7 @@ module DDNSSD
     end
 
     def port_exposed?(spec)
-      @host_network || !@exposed_ports[spec].nil?
+      @expose_all_ports || @host_network || !@exposed_ports[spec].nil?
     end
 
     def addressable?
@@ -108,6 +109,8 @@ module DDNSSD
       end.each_with_object(Hash.new { |h, k| h[k] = {} }) do |(lbl, val), h|
         if lbl =~ /\A_([^.]+(?:\.\d+)?)\.(.*)\z/
           h[$1][$2] = val
+        elsif lbl == "ignore-expose"
+          # Ignore this
         else
           @logger.warn(progname) { "Ignoring invalid label org.discourse.service.#{lbl}." }
         end
