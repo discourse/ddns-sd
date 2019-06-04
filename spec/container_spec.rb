@@ -83,13 +83,13 @@ describe DDNSSD::Container do
     end
   end
 
-  context "container with a moby-derp ref to another container" do
-    let(:container_name) { "moby_derp_ref" }
+  context "pod child container" do
+    let(:container_name) { "pod_child" }
 
     before(:each) do
       allow(system)
         .to receive(:container)
-        .with("asdfasdfbasiccontainer")
+        .with("basic_container")
         .and_return(DDNSSD::Container.new(container_fixture("basic_container"), config, system))
     end
 
