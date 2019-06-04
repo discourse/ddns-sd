@@ -6,10 +6,8 @@ Config:
   ExposedPorts: {}
 NetworkSettings:
   Ports: {}
-  Networks:
-    bridge:
-      Gateway: 172.17.0.1
-      GlobalIPv6Address: '2001:db8::42'
-      IPAddress: 172.17.0.42
+  Gateway: 172.17.0.1
+  GlobalIPv6Address: '2001:db8::42'
+  IPAddress: 172.17.0.42
 id: asdfasdfnudist
 

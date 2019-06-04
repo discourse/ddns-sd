@@ -120,9 +120,7 @@ module DDNSSD
 
     def container(id)
       begin
-        with_docker_api_version "1.36" do
-          DDNSSD::Container.new(Docker::Container.get(id, {}, docker_connection), @config, self)
-        end
+        DDNSSD::Container.new(Docker::Container.get(id, {}, docker_connection), @config, self)
       rescue Docker::Error::NotFoundError
         nil
       end

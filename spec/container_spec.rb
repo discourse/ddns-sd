@@ -83,32 +83,6 @@ describe DDNSSD::Container do
     end
   end
 
-  context "container with no networks" do
-    let(:container_name) { "no_network" }
-
-    before(:each) do
-      allow(logger).to receive(:error)
-    end
-
-    it "doesn't log an error" do
-      container
-
-      expect(logger).to_not have_received(:error)
-    end
-
-    it "doesn't return an IPv4 address" do
-      expect(container.ipv4_address).to eq(nil)
-    end
-
-    it "doesn't return an IPv6 address" do
-      expect(container.ipv6_address).to eq(nil)
-    end
-
-    it "is not addressable" do
-      expect(container.addressable?).to be(false)
-    end
-  end
-
   context "container with a moby-derp ref to another container" do
     let(:container_name) { "moby_derp_ref" }
 
@@ -135,28 +109,6 @@ describe DDNSSD::Container do
 
     it "is addressable" do
       expect(container.addressable?).to be(true)
-    end
-  end
-
-  context "container with two networks" do
-    let(:container_name) { "multi_network" }
-
-    before(:each) do
-      allow(logger).to receive(:error)
-    end
-
-    it "logs an error" do
-      container
-
-      expect(logger).to have_received(:error)
-    end
-
-    it "doesn't return an IPv4 address" do
-      expect(container.ipv4_address).to eq(nil)
-    end
-
-    it "doesn't return an IPv6 address" do
-      expect(container.ipv6_address).to eq(nil)
     end
   end
 
