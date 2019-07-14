@@ -330,6 +330,39 @@ describe DDNSSD::System do
           end
         end
 
+        describe ":removed" do
+          it "tells the container to go suppress itself" do
+            system.instance_variable_get(:@containers)["asdfasdfpub80"] = ddnssd_container
+
+            expect(mock_queue).to receive(:pop).and_return([:removed, "asdfasdfpub80"])
+            expect(ddnssd_container).to receive(:suppress_records).with(mock_backend)
+
+            system.run
+          end
+
+          it "handles a container that doesn't exist" do
+            expect(mock_queue).to receive(:pop).and_return([:removed, "destroyedalready"])
+            expect(ddnssd_container).to_not receive(:suppress_records).with(mock_backend)
+            allow(logger).to receive(:warn).with("DDNSSD::System")
+
+            system.run
+          end
+
+          context "with multiple backends" do
+            let(:env) { base_env.merge("DDNSSD_BACKEND" => "test_queue,log") }
+
+            it "tells the container to suppress itself everywhere" do
+              system.instance_variable_get(:@containers)["asdfasdfpub80"] = ddnssd_container
+
+              expect(mock_queue).to receive(:pop).and_return([:removed, "asdfasdfpub80"])
+              expect(ddnssd_container).to receive(:suppress_records).with(mock_backend)
+              expect(ddnssd_container).to receive(:suppress_records).with(mock_log_backend)
+
+              system.run
+            end
+          end
+        end
+
         describe ":suppress_all" do
           it "suppresses records from all containers, as well as 'shared' records" do
             system.instance_variable_get(:@containers)["asdfasdpub80"] = ddnssd_container

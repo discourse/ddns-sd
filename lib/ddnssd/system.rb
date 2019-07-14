@@ -89,6 +89,15 @@ module DDNSSD
             @containers[id].crashed = true
             @logger.warn(progname) { "Container #{id} did not stop cleanly (exitcode #{exitcode}); not suppressing records" }
           end
+        when :removed
+          _, id = item
+          unless @containers[id]
+            @logger.warn(progname) { "Container #{id} removed, but we're not tracking it.  Ignoring :removed message." }
+            next
+          end
+
+          @backends.each { |backend| @containers[id].suppress_records(backend) }
+          @containers.delete(id)
         when :suppress_all
           @logger.info(progname) { "Withdrawing all DNS records..." }
           @backends.each do |backend|

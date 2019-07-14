@@ -18,6 +18,8 @@ module DDNSSD
       @event_count.increment({ type: "ignored" }, 0)
       @event_count.increment({ type: "started" }, 0)
       @event_count.increment({ type: "stopped" }, 0)
+      @event_count.increment({ type: "died" }, 0)
+      @event_count.increment({ type: "removed" }, 0)
 
       @event_errors = @config.metrics_registry.counter(:ddnssd_docker_event_exceptions_total, "How many exceptions have been raised for handling docker events")
 
@@ -94,16 +96,20 @@ module DDNSSD
           @event_count.increment(type: "started")
           [:started, event.ID]
         elsif event.Action == "kill"
+          @event_count.increment(type: "stopped")
           [:stopped, event.ID]
         elsif event.Action == "die"
-          @event_count.increment(type: "stopped")
+          @event_count.increment(type: "died")
           [:died, event.ID, event.Actor.Attributes["exitCode"].to_i]
+        elsif event.Action == "destroy"
+          @event_count.increment(type: "removed")
+          [:removed, event.ID]
         else
           @event_count.increment(type: "ignored")
           nil
         end
 
-        next if queue_item.nil? || queue_item.last.nil?
+        next if queue_item.nil? || queue_item.any?(&:nil?)
 
         @queue.push(queue_item)
       end

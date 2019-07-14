@@ -98,6 +98,17 @@ describe DDNSSD::DockerWatcher do
       expect(item).to eq([:died, "asdfasdfpub80", 42])
     end
 
+    it "emits a removed when a container is destroyed" do
+      expect(Docker::Event).to receive(:since).with(1234567890, {}, mock_conn).and_yield(test_event(action: "destroy", id: "asdfasdfpub80"))
+
+      watcher.run
+
+      expect(queue.length).to eq(1)
+      item = queue.pop
+
+      expect(item).to eq([:removed, "asdfasdfpub80"])
+    end
+
     it "ignores uninteresting events" do
       expect(Docker::Event).to receive(:since).with(1234567890, {}, mock_conn).and_yield(test_event(type: "container", action: "spindle", id: "zomg"))
 
