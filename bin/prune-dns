@@ -1,47 +1,47 @@
-#!/usr/bin/env ruby
-
+# !/usr/bin/env ruby
 # frozen_string_literal: true
 
 # Given a list of EC2 server IDs that are running, remove SRV records that
 # don't belong to any of those servers.
+#
+# Usage: $0 [option ...] operation instance ...
+# options:
+#   -v          verbose
+# operations:
+#   noop        audit
+#   perform     cleanup
+# instance:
+#   0123456789abcdef0 ID to retain
 
-require 'logger'
-require 'optparse'
+verbosity = 'WARN'
+operation = :noop
+instances = []
 
-VERBOSE = false
-
-OptionParser.new do |opts|
-  opts.banner = "Usage: prune-dns [options] [operation]"
-  opts.separator "Options:"
-  opts.on("-v", "--verbose", "Verbose mode") do |v|
-    VERBOSE = v
+while option = shift.ARGV do
+  case option.downcase
+  when '-v', '--verbose'
+    verbosity = 'DEBUG'
+  when 'noop'
+    operation = :noop
+  when 'perform'
+    operation = :perform
+  else
+    instances << option
   end
 end
 
+require 'logger'
+
 logger = Logger.new($stderr)
-logger.level = VERBOSE ? "DEBUG" : "WARN"
+logger.level = verbosity
 
-operation = ARGV[0]
-unless operation.nil?
-  operation = nil unless ['noop', 'perform'].include?(operation.downcase)
-end
-
-server_ids = operation.nil? ? ARGV[0..-1] : ARGV[1..-1]
-
-if server_ids.empty?
-  logger.error 'You need to include EC2 server IDs as arguments'
-  exit 1
-end
-
-if server_ids.any? { |id| id !~ /^[0-9a-f]{17}$/ }
+if instances.any? { |id| id !~ /^[0-9a-f]{17}$/ }
   logger.error "Those EC2 server ids don't all look right.",
     "Should be 17 characters 0-9 a-f.",
     "I got these:", ''
-  logger.error server_ids
+  logger.error instances
   exit 1
 end
-
-# Find SRV records that should be pruned
 
 require 'ddnssd/dns_record'
 require 'ddnssd/backend/power_dns'
@@ -55,7 +55,7 @@ srv_records = all_records.select do |rr|
   rr.type == :SRV
 end
 
-regex = Regexp.new("(#{server_ids.join('|')})$")
+regex = Regexp.new("(#{instances.join('|')})$")
 
 old_records = srv_records.select do |rr|
   if rr.name.to_s.start_with? "dns-sd._postgresql._tcp"
@@ -72,18 +72,13 @@ end
 
 logger.warn "#{old_records.size } records to be removed:", ''
 logger.warn old_records.map { |rr| rr.short_inspect }
-logger.warn ''
 
-if operation != 'perform'
-  logger.warn 'Not removing any records. Run again with "perform" to do it.'
-  exit 0
+case operation
+when :perform
+  logger.warn 'Removing records now...'
+  old_records.each do |rr|
+    pdns.suppress_record(rr)
+  end
+else
+  logger.warn 'Not removing any records.'
 end
-
-# Remove them
-logger.warn 'Removing records now...'
-
-old_records.each do |rr|
-  pdns.suppress_record(rr)
-end
-
-logger.warn 'Done'
