@@ -5,8 +5,22 @@
 # Given a list of EC2 server IDs that are running, remove SRV records that
 # don't belong to any of those servers.
 
-operation = ARGV[0]
+require 'optparse'
 
+VERBOSE = false
+
+OptionParser.new do |opts|
+  opts.banner = "Usage: prune-dns [options] [operation]"
+  opts.separator "Options:"
+  opts.on("-v", "--verbose", "Verbose mode") do |v|
+    VERBOSE = v
+  end
+end
+
+logger = Logger.new($stderr)
+logger.level = VERBOSE ? "DEBUG" : "WARN"
+
+operation = ARGV[0]
 unless operation.nil?
   operation = nil unless ['noop', 'perform'].include?(operation.downcase)
 end
@@ -14,16 +28,15 @@ end
 server_ids = operation.nil? ? ARGV[0..-1] : ARGV[1..-1]
 
 if server_ids.empty?
-  $stderr.puts 'You need to include EC2 server IDs as arguments'
+  logger.error 'You need to include EC2 server IDs as arguments'
   exit 1
 end
 
 if server_ids.any? { |id| id !~ /^[0-9a-f]{17}$/ }
-  puts "Those EC2 server ids don't all look right.",
+  logger.error "Those EC2 server ids don't all look right.",
     "Should be 17 characters 0-9 a-f.",
     "I got these:", ''
-  puts server_ids
-  puts '', 'Quitting'
+  logger.error server_ids
   exit 1
 end
 
@@ -31,9 +44,6 @@ end
 
 require 'ddnssd/dns_record'
 require 'ddnssd/backend/power_dns'
-
-logger = Logger.new($stderr)
-logger.level = "DEBUG"
 
 config = DDNSSD::Config.new(ENV, logger: logger)
 
@@ -48,31 +58,31 @@ regex = Regexp.new("(#{server_ids.join('|')})$")
 
 old_records = srv_records.select do |rr|
   if rr.name.to_s.start_with? "dns-sd._postgresql._tcp"
-    puts "skipping dns-sd._postgresql._tcp"
+    logger.info "skipping dns-sd._postgresql._tcp"
     next
   end
   rr.data.target.to_s !~ regex
 end
 
 if old_records.size == 0
-  puts "Found no records to prune."
+  logger.info "Found no records to prune."
   exit 0
 end
 
-puts "#{old_records.size } records to be removed:", ''
-puts old_records.map { |rr| rr.short_inspect }
-puts ''
+logger.warn "#{old_records.size } records to be removed:", ''
+logger.warn old_records.map { |rr| rr.short_inspect }
+logger.warn ''
 
 if operation != 'perform'
-  puts 'Not removing any records. Run again with "perform" to do it.'
+  logger.warn 'Not removing any records. Run again with "perform" to do it.'
   exit 0
 end
 
 # Remove them
-puts 'Removing records now...', ''
+logger.warn 'Removing records now...'
 
 old_records.each do |rr|
   pdns.suppress_record(rr)
 end
 
-puts 'Done', ''
+logger.warn 'Done'
