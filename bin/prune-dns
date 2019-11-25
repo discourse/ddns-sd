@@ -70,7 +70,7 @@ if old_records.size == 0
   exit 0
 end
 
-logger.warn "#{old_records.size } records to be removed:", ''
+logger.warn "#{old_records.size } records to be removed:"
 logger.warn old_records.map { |rr| rr.short_inspect }
 
 case operation
