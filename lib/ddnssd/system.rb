@@ -98,6 +98,8 @@ module DDNSSD
 
           @backends.each { |backend| @containers[id].suppress_records(backend) }
           @containers.delete(id)
+        when :reconcile_all
+          @backends.each { |backend| reconcile_containers(backend) }
         when :suppress_all
           @logger.info(progname) { "Withdrawing all DNS records..." }
           @backends.each do |backend|
@@ -117,6 +119,10 @@ module DDNSSD
           @logger.error(progname) { "SHOULDN'T HAPPEN: docker watcher sent an unrecognized message: #{item.inspect}.  This is a bug, please report it." }
         end
       end
+    end
+
+    def reconcile_all
+      @queue.push([:reconcile_all])
     end
 
     def shutdown(suppress_records = true)

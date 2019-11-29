@@ -40,13 +40,20 @@ Signal.trap("HUP") do
   sig_w.print 'H'
 end
 
+Signal.trap("CONT") do
+  sig_w.print 'C'
+end
+
 begin
   system = DDNSSD::System.new(ENV, logger: logger)
 
   Thread.new do
     loop do
       c = sig_r.getc
-      if c == 'T'
+      if c == 'C'
+        logger.info($0) { "Received SIGCONT." }
+        system.reconcile_all
+      elsif c == 'T'
         logger.info($0) { "Received SIGTERM." }
         system.shutdown(true)
       elsif c == 'H'
