@@ -164,7 +164,7 @@ module DDNSSD
       end
     end
 
-    def parse_ushort_label(k)
+    def parse_ushort_label(k, default = 0)
       if @labels[k]
         unless @labels[k] =~ /\A\d+\z/
           raise ServiceInstanceValidationError,
@@ -178,13 +178,13 @@ module DDNSSD
 
         @labels[k].to_i
       else
-        0
+        default
       end
     end
 
     def srv_records
-      priority = parse_ushort_label("priority")
-      weight   = parse_ushort_label("weight")
+      priority = parse_ushort_label("priority", 0)
+      weight   = parse_ushort_label("weight", 1)
 
       protos.map do |proto|
         port = @container.host_port_for("#{@labels["port"]}/#{proto}") || @labels["port"]
