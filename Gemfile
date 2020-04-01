@@ -23,6 +23,8 @@ group :development do
   gem 'redcarpet'
   gem 'rspec'
   gem 'rubocop'
+  gem 'rubocop-discourse', require: false
+  gem 'rubocop-rspec', require: false
   gem 'simplecov'
   gem 'yard'
 end

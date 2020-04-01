@@ -4,5 +4,5 @@ inherit_from: https://raw.githubusercontent.com/discourse/discourse/master/.rubo
 Lint/ShadowingOuterLocalVariable:
   Enabled: false
 
-Layout/AlignHash:
+Layout/HashAlignment:
   Enabled: false
