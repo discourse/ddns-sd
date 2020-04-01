@@ -181,7 +181,7 @@ describe DDNSSD::Backend::Azure do
                                            "flingle",
                                            "AAAA",
                                            match_azure_record(
-                                             "properties" => { "TTL" => 42, "AAAARecords" => [{ "ipv6Address" => "2001:DB8::42" }] }))
+                                             "properties" => { "TTL" => 42, "AAAARecords" => [{ "ipv6Address" => RUBY_VERSION >= "2.7" ? "2001:db8::42" : "2001:DB8::42" }] }))
         expect(az_client.record_sets).to_not receive(:list_resource_record_sets)
 
         backend.publish_record(DDNSSD::DNSRecord.new("flingle", 42, :AAAA, "2001:db8::42"))

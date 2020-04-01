@@ -1,6 +1,16 @@
 # frozen_string_literal: true
 require 'pp'
 
+RSpec::Matchers.define :eq_i do |value|
+  match do |actual|
+    actual.downcase == value.downcase
+  end
+
+  failure_message do |actual|
+    "expected #{actual.pretty_inspect} to equal (case insensitive) '#{value}'"
+  end
+end
+
 RSpec::Matchers.define :have_A_record do |relrrname, address|
   match do |actual|
     actual.any? do |rr|
@@ -20,7 +30,7 @@ RSpec::Matchers.define :have_AAAA_record do |relrrname, address|
     actual.any? do |rr|
       rr.data.class == Resolv::DNS::Resource::IN::AAAA &&
         (relrrname.nil? || rr.name == relrrname) &&
-        (address.nil? || rr.data.address.to_s == address.upcase)
+        (address.nil? || rr.data.address.to_s.downcase == address.downcase)
     end
   end
 

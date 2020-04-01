@@ -347,7 +347,7 @@ describe DDNSSD::Config do
         expect(dns_record).to be_a(DDNSSD::DNSRecord)
         expect(dns_record.name).to eq(env['DDNSSD_HOSTNAME'])
         expect(dns_record.type).to eq(:AAAA)
-        expect(dns_record.value).to eq('2001:DB8::42')
+        expect(dns_record.value).to eq_i('2001:DB8::42')
       end
     end
   end

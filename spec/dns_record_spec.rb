@@ -243,13 +243,13 @@ describe DDNSSD::DNSRecord do
           end
 
           it "holds the provided address" do
-            expect(record.data.address.to_s).to eq("2001:DB8::42")
+            expect(record.data.address.to_s).to eq_i("2001:DB8::42")
           end
         end
 
         describe "#value" do
           it "returns the address" do
-            expect(record.value).to eq("2001:DB8::42")
+            expect(record.value).to eq_i("2001:DB8::42")
           end
         end
       end
@@ -447,13 +447,13 @@ describe DDNSSD::DNSRecord do
           end
 
           it "holds the provided address" do
-            expect(record.data.address.to_s).to eq("2001:DB8::42")
+            expect(record.data.address.to_s).to eq_i("2001:DB8::42")
           end
         end
 
         describe "#value" do
           it "returns the address" do
-            expect(record.value).to eq("2001:DB8::42")
+            expect(record.value.upcase).to eq("2001:DB8::42")
           end
         end
       end

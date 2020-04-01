@@ -421,7 +421,7 @@ describe DDNSSD::Backend::Route53 do
                         type: "AAAA",
                         ttl: 42,
                         resource_records: [
-                          { value: "2001:DB8::42" }
+                          { value: RUBY_VERSION >= "2.7" ? "2001:db8::42" : "2001:DB8::42" }
                         ]
                       }
                     }
@@ -1416,7 +1416,7 @@ describe DDNSSD::Backend::Route53 do
                           type: "AAAA",
                           ttl: 42,
                           resource_records: [
-                            { value: "2001:DB8::42" }
+                            { value: RUBY_VERSION >= "2.7" ? "2001:db8::42" : "2001:DB8::42" }
                           ]
                         }
                       }
@@ -1451,9 +1451,9 @@ describe DDNSSD::Backend::Route53 do
                           type: "AAAA",
                           ttl: 42,
                           resource_records: [
-                            { value: "2001:DB8::1" },
-                            { value: "2001:DB8::42" },
-                            { value: "2001:DB8::180" }
+                            { value: RUBY_VERSION >= "2.7" ? "2001:db8::1" : "2001:DB8::1" },
+                            { value: RUBY_VERSION >= "2.7" ? "2001:db8::42" : "2001:DB8::42" },
+                            { value: RUBY_VERSION >= "2.7" ? "2001:db8::180" : "2001:DB8::180" }
                           ]
                         }
                       },
@@ -1464,8 +1464,8 @@ describe DDNSSD::Backend::Route53 do
                           type: "AAAA",
                           ttl: 42,
                           resource_records: [
-                            { value: "2001:DB8::1" },
-                            { value: "2001:DB8::180" }
+                            { value: RUBY_VERSION >= "2.7" ? "2001:db8::1" : "2001:DB8::1" },
+                            { value: RUBY_VERSION >= "2.7" ? "2001:db8::180" : "2001:DB8::180" }
                           ]
                         }
                       }
@@ -1499,8 +1499,8 @@ describe DDNSSD::Backend::Route53 do
                           type: "AAAA",
                           ttl: 42,
                           resource_records: [
-                            { value: "2001:DB8::1" },
-                            { value: "2001:DB8::180" }
+                            { value: RUBY_VERSION >= "2.7" ? "2001:db8::1" : "2001:DB8::1" },
+                            { value: RUBY_VERSION >= "2.7" ? "2001:db8::180" : "2001:DB8::180" }
                           ]
                         }
                       },
@@ -1511,8 +1511,8 @@ describe DDNSSD::Backend::Route53 do
                           type: "AAAA",
                           ttl: 42,
                           resource_records: [
-                            { value: "2001:DB8::1" },
-                            { value: "2001:DB8::180" }
+                            { value: RUBY_VERSION >= "2.7" ? "2001:db8::1" : "2001:DB8::1" },
+                            { value: RUBY_VERSION >= "2.7" ? "2001:db8::180" : "2001:DB8::180" }
                           ]
                         }
                       }
