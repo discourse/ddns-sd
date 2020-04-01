@@ -487,10 +487,10 @@ describe DDNSSD::System do
 
         expect(mock_backend)
           .to receive(:suppress_record)
-          .with(eq(DDNSSD::DNSRecord.new("pub80._http._tcp", 60, :SRV, 0, 0, 8080, "speccy")))
+          .with(eq(DDNSSD::DNSRecord.new("pub80._http._tcp", 60, :SRV, 0, 1, 8080, "speccy")))
         expect(mock_backend)
           .to receive(:publish_record)
-          .with(eq(DDNSSD::DNSRecord.new("pub80._http._tcp", 60, :SRV, 0, 0, 1337, "speccy")))
+          .with(eq(DDNSSD::DNSRecord.new("pub80._http._tcp", 60, :SRV, 0, 1, 1337, "speccy")))
 
         system.send(:reconcile_containers, mock_backend)
       end

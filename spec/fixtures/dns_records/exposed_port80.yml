@@ -13,7 +13,7 @@
   ttl: 60
   data:
   - 0
-  - 0
+  - 1
   - 80
   - asdfasdfexpo.speccy
 - name: exposed80._http._tcp

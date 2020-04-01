@@ -8,6 +8,6 @@
   ttl: 60
   data:
   - 0
-  - 0
+  - 1
   - 8080
   - zomg.someone-else

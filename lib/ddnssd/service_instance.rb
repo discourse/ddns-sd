@@ -5,6 +5,9 @@ require 'ddnssd/dns_record'
 require 'ddnssd/error'
 
 module DDNSSD
+  DEFAULT_SRV_PRIORITY = 0
+  DEFAULT_SRV_WEIGHT = 1
+
   class ServiceInstance
     class ServiceInstanceValidationError < DDNSSD::Error; end
 
@@ -183,8 +186,8 @@ module DDNSSD
     end
 
     def srv_records
-      priority = parse_ushort_label("priority", 0)
-      weight   = parse_ushort_label("weight", 1)
+      priority = parse_ushort_label("priority", DEFAULT_SRV_PRIORITY)
+      weight   = parse_ushort_label("weight", DEFAULT_SRV_WEIGHT)
 
       protos.map do |proto|
         port = @container.host_port_for("#{@labels["port"]}/#{proto}") || @labels["port"]

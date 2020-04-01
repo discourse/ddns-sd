@@ -3,7 +3,7 @@
   ttl: 60
   data:
   - 0
-  - 0
+  - 1
   - 80
   - speccy
 - name: host_port80._http._tcp

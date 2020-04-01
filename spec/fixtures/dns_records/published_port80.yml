@@ -3,7 +3,7 @@
   ttl: 60
   data:
   - 0
-  - 0
+  - 1
   - 8080
   - speccy
 - name: pub80._http._tcp

@@ -66,7 +66,7 @@ describe DDNSSD::ServiceInstance do
         end
 
         it "has a SRV record pointing to the container+exposed port" do
-          expect(result).to have_SRV_record("exposed80._http._tcp", "0 0 80 asdfasdfexpo.speccy")
+          expect(result).to have_SRV_record("exposed80._http._tcp", "0 1 80 asdfasdfexpo.speccy")
         end
 
         it "has an empty TXT record" do
@@ -89,7 +89,7 @@ describe DDNSSD::ServiceInstance do
           end
 
           it "has a SRV record pointing to the container+exposed port" do
-            expect(result).to have_SRV_record("exposed80._http._tcp", "0 0 80 asdfasdfexpo.speccy")
+            expect(result).to have_SRV_record("exposed80._http._tcp", "0 1 80 asdfasdfexpo.speccy")
           end
 
           it "has an empty TXT record" do
@@ -114,7 +114,7 @@ describe DDNSSD::ServiceInstance do
         end
 
         it "has a SRV record pointing to the container+exposed port" do
-          expect(result).to have_SRV_record("exposed80._http._tcp", "0 0 80 asdfasdfexpo.speccy")
+          expect(result).to have_SRV_record("exposed80._http._tcp", "0 1 80 asdfasdfexpo.speccy")
         end
 
         it "has an empty TXT record" do
@@ -150,7 +150,7 @@ describe DDNSSD::ServiceInstance do
         end
 
         it "has a SRV record pointing to the host+published port" do
-          expect(result).to have_SRV_record("pub80._http._tcp", "0 0 8080 speccy")
+          expect(result).to have_SRV_record("pub80._http._tcp", "0 1 8080 speccy")
         end
 
         it "has an empty TXT record" do
@@ -190,7 +190,7 @@ describe DDNSSD::ServiceInstance do
         end
 
         it "has a SRV record pointing to the host+published port" do
-          expect(result).to have_SRV_record("pub80._http._tcp", "0 0 8080 192-0-2-99.speccy")
+          expect(result).to have_SRV_record("pub80._http._tcp", "0 1 8080 192-0-2-99.speccy")
         end
 
         it "has an empty TXT record" do
@@ -242,7 +242,7 @@ describe DDNSSD::ServiceInstance do
         let(:docker_container) { container_fixture("exposed_port80") }
 
         it "has a SRV record pointing to the container+exposed port" do
-          expect(result).to have_SRV_record("flibbety._http._tcp", "0 0 80 asdfasdfexpo.speccy")
+          expect(result).to have_SRV_record("flibbety._http._tcp", "0 1 80 asdfasdfexpo.speccy")
         end
 
         it "has an empty TXT record" do
@@ -258,7 +258,7 @@ describe DDNSSD::ServiceInstance do
         let(:docker_container) { container_fixture("published_port80") }
 
         it "has a SRV record pointing to the host+published port" do
-          expect(result).to have_SRV_record("flibbety._http._tcp", "0 0 8080 speccy")
+          expect(result).to have_SRV_record("flibbety._http._tcp", "0 1 8080 speccy")
         end
 
         it "has an empty TXT record" do
@@ -329,7 +329,7 @@ describe DDNSSD::ServiceInstance do
       end
 
       it "has a _udp SRV record" do
-        expect(result).to have_SRV_record("pub80._http._udp", "0 0 8080 speccy")
+        expect(result).to have_SRV_record("pub80._http._udp", "0 1 8080 speccy")
       end
 
       it "has an empty _udp TXT record" do
@@ -352,7 +352,7 @@ describe DDNSSD::ServiceInstance do
 
       %w{_tcp _udp}.each do |proto|
         it "has a #{proto} SRV record" do
-          expect(result).to have_SRV_record("pub80._http.#{proto}", "0 0 8080 speccy")
+          expect(result).to have_SRV_record("pub80._http.#{proto}", "0 1 8080 speccy")
         end
 
         it "has an empty #{proto} TXT record" do
@@ -387,7 +387,7 @@ describe DDNSSD::ServiceInstance do
       end
 
       it "has a customised SRV record" do
-        expect(result).to have_SRV_record("exposed80._http._tcp", "42 0 80 asdfasdfexpo.speccy")
+        expect(result).to have_SRV_record("exposed80._http._tcp", "42 1 80 asdfasdfexpo.speccy")
       end
     end
 
@@ -668,7 +668,7 @@ describe DDNSSD::ServiceInstance do
 
         it "has a SRV record pointing to the container+port" do
           allow(logger).to receive(:warn)
-          expect(result).to have_SRV_record("exposed80._http._tcp", "0 0 1337 asdfasdfexpo.speccy")
+          expect(result).to have_SRV_record("exposed80._http._tcp", "0 1 1337 asdfasdfexpo.speccy")
         end
       end
     end

@@ -13,7 +13,7 @@
   ttl: 60
   data:
   - 0
-  - 0
+  - 1
   - 80
   - asdfasdfnudi.speccy
 - name: nudist._http._tcp
