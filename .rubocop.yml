@@ -6,3 +6,6 @@ Lint/ShadowingOuterLocalVariable:
 
 Layout/HashAlignment:
   Enabled: false
+
+RSpec/MessageSpies:
+  Enabled: false

@@ -58,7 +58,7 @@ describe FilteredDebugLogger do
 
     it "writes only the debug messages for the given prognames" do
       logger.level = Logger::DEBUG
-      expect(logdev).to receive(:write).exactly(2).times
+      expect(logdev).to receive(:write).twice
 
       # Should be written
       logger.debug("x") { "ohai!" }

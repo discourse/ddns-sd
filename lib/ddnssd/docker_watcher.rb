@@ -39,7 +39,7 @@ module DDNSSD
         sleep 1
         retry
       rescue DDNSSD::DockerWatcher::Terminate
-        return
+        # fall out and return
       rescue StandardError => ex
         @event_errors.increment(class: ex.class.to_s)
 

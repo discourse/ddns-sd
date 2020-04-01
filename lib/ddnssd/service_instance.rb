@@ -43,7 +43,7 @@ module DDNSSD
         a_records + aaaa_records + srv_records + txt_records + ptr_records + cname_records
       rescue ServiceInstanceValidationError => ex
         @logger.error(progname) { "#{ex.message} Service not registered." }
-        return []
+        []
       end
     end
 
