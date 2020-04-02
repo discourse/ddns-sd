@@ -4,6 +4,7 @@
 /coverage
 /.bundle
 /tmp
+/.idea
 .ruby-version
 .DS_Store
 
