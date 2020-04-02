@@ -36,7 +36,7 @@ end
 namespace :docker do
   desc "Build a new docker image"
   task :build do
-    sh "docker pull ruby:2.3-alpine"
+    sh "docker pull ruby:2.6-alpine"
     sh "docker build -t discourse/ddns-sd --build-arg=http_proxy=#{ENV['http_proxy']} --build-arg=GIT_REVISION=$(git rev-parse HEAD) ."
   end
 

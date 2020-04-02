@@ -1,4 +1,4 @@
-FROM ruby:2.3-alpine
+FROM ruby:2.6-alpine
 
 MAINTAINER Matt Palmer "matt.palmer@discourse.org"
 
@@ -12,7 +12,10 @@ RUN adduser -D ddnssd \
 	&& apk add build-base \
 	&& apk add postgresql-dev \
 	&& cd /home/ddnssd \
-	&& su -pc 'bundle install --deployment --without development' ddnssd \
+	&& su -pc 'gem install bundler:2.1.2' ddnssd \
+	&& su -pc 'bundle config set without development' ddnssd \
+	&& su -pc 'bundle config set deployment true' ddnssd \
+	&& su -pc 'bundle install' ddnssd \
 	&& apk del build-base \
 	&& rm -rf /tmp/* /var/cache/apk/*
 
@@ -20,7 +23,7 @@ ARG GIT_REVISION=invalid-build
 ENV DDNSSD_GIT_REVISION=$GIT_REVISION DDNSSD_DISABLE_LOG_TIMESTAMPS=yes
 
 COPY bin/* /usr/local/bin/
-COPY lib/ /usr/local/lib/ruby/2.3.0/
+COPY lib/ /usr/local/lib/ruby/2.6.0/
 
 EXPOSE 9218
 LABEL org.discourse.service._prom-exp.port=9218 org.discourse.service._prom-exp.instance=ddns-sd
