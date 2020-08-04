@@ -30,6 +30,17 @@ module DDNSSD
         root_container = system.container(root_container_name)
         @ipv4_address = root_container.ipv4_address
         @ipv6_address = root_container.ipv6_address
+      elsif root_id = docker_data.info["Config"]["Labels"]["org.hezmatt.moby-derp.root-container-id"]
+        @logger.info(progname) { "Using #{root_id} as source of network address information" }
+        if @id == root_id
+          #:nocov:
+          raise DDNSSD::Error,
+                "root-container-id (#{@id.inspect}) points to us!"
+          #:nocov:
+        end
+        root_container = system.container(root_id)
+        @ipv4_address = root_container.ipv4_address
+        @ipv6_address = root_container.ipv6_address
       else
         @ipv4_address = docker_data.info["NetworkSettings"]["IPAddress"]
         @ipv6_address = docker_data.info["NetworkSettings"]["GlobalIPv6Address"]
