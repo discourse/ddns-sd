@@ -12,9 +12,9 @@ describe DDNSSD::Container do
 
   let(:env) do
     {
-      "DDNSSD_HOSTNAME"        => "speccy",
-      "DDNSSD_BACKEND"         => "test_queue",
-      "DDNSSD_BASE_DOMAIN"     => "example.com",
+      "DDNSSD_HOSTNAME" => "speccy",
+      "DDNSSD_BACKEND" => "test_queue",
+      "DDNSSD_BASE_DOMAIN" => "example.com",
       "DDNSSD_HOST_IP_ADDRESS" => "192.0.2.42"
     }
   end

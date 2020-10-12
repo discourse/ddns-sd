@@ -80,15 +80,15 @@ class DDNSSD::Backend::Azure < DDNSSD::Backend
     end
 
     def dnssd_to_az_records(records)
-      r = records.first
+      first_record = records.first
       rrset = RecordSet.new
-      rrset.ttl = r.ttl
-      rrset.name = dnssd_to_az_name r.name
-      rrset.type = r.type.to_s
-      case r.type
-      when :A then rrset.arecords = records.map { |r|
+      rrset.ttl = first_record.ttl
+      rrset.name = dnssd_to_az_name first_record.name
+      rrset.type = first_record.type.to_s
+      case first_record.type
+      when :A then rrset.arecords = records.map { |record|
                       ar = ARecord.new
-                      ar.ipv4address = r.value
+                      ar.ipv4address = record.value
                       ar }
       when :AAAA then rrset.aaaa_records = records.map { |r|
                          ar = AaaaRecord.new
@@ -357,7 +357,7 @@ class DDNSSD::Backend::Azure < DDNSSD::Backend
         end
 
         ptrs = @record_cache.get(srv_rr.parent_name, :PTR)
-        ptr = ptrs.find { |ptr| ptr.value == srv_rr.name }
+        ptr = ptrs.find { |p| p.value == srv_rr.name }
 
         if ptr
           @logger.debug(progname) { "Removing associated PTR record #{ptr.inspect}" }
@@ -372,7 +372,7 @@ class DDNSSD::Backend::Azure < DDNSSD::Backend
 
         if existing_records == [srv_rr]
           # We nuked these
-          @record_cache.get(srv_rr.name, :TXT).each { |txt| @record_cache.remove(txt) }
+          @record_cache.get(srv_rr.name, :TXT).each { |t| @record_cache.remove(t) }
           @record_cache.remove(ptr) if ptr
         end
       end

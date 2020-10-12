@@ -11,9 +11,9 @@ describe DDNSSD::ServiceInstance do
 
   let(:base_env) do
     {
-      "DDNSSD_HOSTNAME"        => "speccy",
-      "DDNSSD_BASE_DOMAIN"     => "example.com",
-      "DDNSSD_BACKEND"         => "test_queue",
+      "DDNSSD_HOSTNAME" => "speccy",
+      "DDNSSD_BASE_DOMAIN" => "example.com",
+      "DDNSSD_BACKEND" => "test_queue",
       "DDNSSD_HOST_IP_ADDRESS" => "192.0.2.42"
     }
   end
@@ -381,7 +381,7 @@ describe DDNSSD::ServiceInstance do
       let(:docker_container) { container_fixture("exposed_port80") }
       let(:labels) do
         {
-          "port"     => "80",
+          "port" => "80",
           "priority" => "42"
         }
       end
@@ -395,7 +395,7 @@ describe DDNSSD::ServiceInstance do
       let(:docker_container) { container_fixture("exposed_port80") }
       let(:labels) do
         {
-          "port"     => "80",
+          "port" => "80",
           "priority" => "over 9000"
         }
       end
@@ -407,7 +407,7 @@ describe DDNSSD::ServiceInstance do
       let(:docker_container) { container_fixture("exposed_port80") }
       let(:labels) do
         {
-          "port"     => "80",
+          "port" => "80",
           "priority" => "10000000000"
         }
       end
@@ -419,7 +419,7 @@ describe DDNSSD::ServiceInstance do
       let(:docker_container) { container_fixture("exposed_port80") }
       let(:labels) do
         {
-          "port"   => "80",
+          "port" => "80",
           "weight" => "42"
         }
       end
@@ -433,7 +433,7 @@ describe DDNSSD::ServiceInstance do
       let(:docker_container) { container_fixture("exposed_port80") }
       let(:labels) do
         {
-          "port"   => "80",
+          "port" => "80",
           "weight" => "over 9000"
         }
       end
@@ -445,7 +445,7 @@ describe DDNSSD::ServiceInstance do
       let(:docker_container) { container_fixture("exposed_port80") }
       let(:labels) do
         {
-          "port"   => "80",
+          "port" => "80",
           "weight" => "10000000000"
         }
       end
@@ -457,9 +457,9 @@ describe DDNSSD::ServiceInstance do
       let(:docker_container) { container_fixture("exposed_port80") }
       let(:labels) do
         {
-          "port"     => "80",
-          "tag.foo"  => "bar",
-          "tag.baz"  => "wombat",
+          "port" => "80",
+          "tag.foo" => "bar",
+          "tag.baz" => "wombat",
           "tag.zomg" => ""
         }
       end
@@ -473,10 +473,10 @@ describe DDNSSD::ServiceInstance do
       let(:docker_container) { container_fixture("exposed_port80") }
       let(:labels) do
         {
-          "port"        => "80",
-          "tag.foo"     => "bar",
+          "port" => "80",
+          "tag.foo" => "bar",
           "tag.txtvers" => "1",
-          "tag.zomg"    => "inorite!"
+          "tag.zomg" => "inorite!"
         }
       end
 
@@ -491,9 +491,9 @@ describe DDNSSD::ServiceInstance do
       let(:docker_container) { container_fixture("exposed_port80") }
       let(:labels) do
         {
-          "port"     => "80",
-          "tag.foo"  => "bar",
-          "tag."     => "kaboom",
+          "port" => "80",
+          "tag.foo" => "bar",
+          "tag." => "kaboom",
           "tag.zomg" => "inorite!"
         }
       end
@@ -505,10 +505,10 @@ describe DDNSSD::ServiceInstance do
       let(:docker_container) { container_fixture("exposed_port80") }
       let(:labels) do
         {
-          "port"        => "80",
-          "tag.foo"     => "bar",
+          "port" => "80",
+          "tag.foo" => "bar",
           "tag.txtvers" => "1",
-          "tag.zomg="   => "inorite!"
+          "tag.zomg=" => "inorite!"
         }
       end
 
@@ -519,10 +519,10 @@ describe DDNSSD::ServiceInstance do
       let(:docker_container) { container_fixture("exposed_port80") }
       let(:labels) do
         {
-          "port"        => "80",
-          "tag.foo"     => "bar",
+          "port" => "80",
+          "tag.foo" => "bar",
           "tag.txtvers" => "1",
-          "tag.zomg\n"  => "inorite!"
+          "tag.zomg\n" => "inorite!"
         }
       end
 
@@ -533,11 +533,11 @@ describe DDNSSD::ServiceInstance do
       let(:docker_container) { container_fixture("exposed_port80") }
       let(:labels) do
         {
-          "port"        => "80",
-          "tag.foo"     => "bar",
+          "port" => "80",
+          "tag.foo" => "bar",
           "tag.txtvers" => "1",
-          "tag.zomg"    => "inorite!",
-          "tags"        => "something\nfunny"
+          "tag.zomg" => "inorite!",
+          "tags" => "something\nfunny"
         }
       end
 
@@ -556,11 +556,11 @@ describe DDNSSD::ServiceInstance do
       let(:docker_container) { container_fixture("exposed_port80") }
       let(:labels) do
         {
-          "port"        => "80",
-          "tag.foo"     => "bar",
+          "port" => "80",
+          "tag.foo" => "bar",
           "tag.txtvers" => "1",
-          "tag.zomg"    => "inorite!",
-          "tags"        => "something\nno=fair\nfunny"
+          "tag.zomg" => "inorite!",
+          "tags" => "something\nno=fair\nfunny"
         }
       end
 
@@ -571,11 +571,11 @@ describe DDNSSD::ServiceInstance do
       let(:docker_container) { container_fixture("exposed_port80") }
       let(:labels) do
         {
-          "port"        => "80",
-          "tag.foo"     => "bar",
+          "port" => "80",
+          "tag.foo" => "bar",
           "tag.txtvers" => "1",
-          "tag.zomg"    => "inorite!",
-          "tags"        => "something\nfu\rny"
+          "tag.zomg" => "inorite!",
+          "tags" => "something\nfu\rny"
         }
       end
 
@@ -586,11 +586,11 @@ describe DDNSSD::ServiceInstance do
       let(:docker_container) { container_fixture("exposed_port80") }
       let(:labels) do
         {
-          "port"        => "80",
-          "tag.foo"     => "bar",
+          "port" => "80",
+          "tag.foo" => "bar",
           "tag.txtvers" => "1",
-          "tag.zomg"    => "inorite!",
-          "tags"        => "something\n\nfunny"
+          "tag.zomg" => "inorite!",
+          "tags" => "something\n\nfunny"
         }
       end
 
@@ -601,10 +601,10 @@ describe DDNSSD::ServiceInstance do
       let(:docker_container) { container_fixture("exposed_port80") }
       let(:labels) do
         {
-          "port"        => "80",
-          "tag.foo"     => "bar",
+          "port" => "80",
+          "tag.foo" => "bar",
           "tag.txtvers" => "1",
-          "tag.zomg"    => "x" * 255
+          "tag.zomg" => "x" * 255
         }
       end
 
@@ -614,7 +614,7 @@ describe DDNSSD::ServiceInstance do
     context "with an aliases label" do
       let(:labels) do
         {
-          "port"    => "80",
+          "port" => "80",
           "aliases" => "some.thing.funny,pgsql-master"
         }
       end

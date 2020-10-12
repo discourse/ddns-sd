@@ -1,11 +1,5 @@
-inherit_from: https://raw.githubusercontent.com/discourse/discourse/master/.rubocop.yml
-
-# https://github.com/rubocop-hq/rubocop/issues/1518
-Lint/ShadowingOuterLocalVariable:
-  Enabled: false
-
-Layout/HashAlignment:
-  Enabled: false
+inherit_gem:
+  rubocop-discourse: default.yml
 
 RSpec/MessageSpies:
   Enabled: false

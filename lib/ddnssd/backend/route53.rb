@@ -96,7 +96,9 @@ class DDNSSD::Backend::Route53 < DDNSSD::Backend
         end
       end
 
-      rrset = res.resource_record_sets.find { |rrset| rrset.name.chomp(".") == name && rrset.type.to_sym == type }
+      rrset = res.resource_record_sets.find do |rrset_inner|
+        rrset_inner.name.chomp(".") == name && rrset_inner.type.to_sym == type
+      end
 
       if rrset
         import_rrset(rrset)
@@ -295,7 +297,7 @@ class DDNSSD::Backend::Route53 < DDNSSD::Backend
         end
 
         ptrs = @record_cache.get(srv_rr.parent_name, :PTR)
-        ptr = ptrs.find { |ptr| ptr.value == srv_rr.name }
+        ptr = ptrs.find { |p| p.value == srv_rr.name }
 
         if ptr
           @logger.debug(progname) { "Removing associated PTR record #{ptr.inspect}" }
@@ -311,7 +313,7 @@ class DDNSSD::Backend::Route53 < DDNSSD::Backend
 
         if existing_records == [srv_rr]
           # We nuked these
-          @record_cache.get(srv_rr.name, :TXT).each { |txt| @record_cache.remove(txt) }
+          @record_cache.get(srv_rr.name, :TXT).each { |t| @record_cache.remove(t) }
           @record_cache.remove(ptr) if ptr
         end
       end

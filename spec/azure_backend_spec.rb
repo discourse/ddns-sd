@@ -25,9 +25,9 @@ describe DDNSSD::Backend::Azure do
   let(:zone) { "example.com" }
   let(:base_env) do
     {
-      "DDNSSD_HOSTNAME"        => "speccy",
-      "DDNSSD_BACKEND"         => "azure",
-      "DDNSSD_BASE_DOMAIN"     => zone,
+      "DDNSSD_HOSTNAME" => "speccy",
+      "DDNSSD_BACKEND" => "azure",
+      "DDNSSD_BASE_DOMAIN" => zone,
       "DDNSSD_AZURE_RESOURCE_GROUP_NAME" => rg,
       "DDNSSD_AZURE_ACCESS_TOKEN" => { accessToken: "flibber",
                                        expiresOn: "2018-08-02 11:29:51.706962",

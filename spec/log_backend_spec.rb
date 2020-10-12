@@ -8,9 +8,9 @@ describe DDNSSD::Backend::Log do
 
   let(:base_env) do
     {
-      "DDNSSD_HOSTNAME"        => "speccy",
-      "DDNSSD_BACKEND"         => "log",
-      "DDNSSD_BASE_DOMAIN"     => "example.com",
+      "DDNSSD_HOSTNAME" => "speccy",
+      "DDNSSD_BACKEND" => "log",
+      "DDNSSD_BASE_DOMAIN" => "example.com",
     }
   end
   let(:env) { base_env }

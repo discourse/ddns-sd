@@ -8,9 +8,9 @@ describe DDNSSD::Backend::Route53 do
 
   let(:base_env) do
     {
-      "DDNSSD_HOSTNAME"        => "speccy",
-      "DDNSSD_BACKEND"         => "route53",
-      "DDNSSD_BASE_DOMAIN"     => "example.com",
+      "DDNSSD_HOSTNAME" => "speccy",
+      "DDNSSD_BACKEND" => "route53",
+      "DDNSSD_BASE_DOMAIN" => "example.com",
       "DDNSSD_ROUTE53_ZONE_ID" => "Z3M3LMPEXAMPLE"
     }
   end

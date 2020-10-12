@@ -13,6 +13,7 @@ gem 'frankenstein', '~> 0.1'
 gem 'pg'
 gem 'mini_sql'
 gem 'dns-sd'
+gem 'rubocop-discourse'
 
 group :development do
   gem 'byebug'

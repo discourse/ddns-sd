@@ -22,9 +22,9 @@ describe DDNSSD::DockerWatcher do
   let(:env) do
     {
       "DDNSSD_BASE_DOMAIN" => "example.com",
-      "DDNSSD_BACKEND"     => "test_queue",
-      "DDNSSD_HOSTNAME"    => "speccy",
-      "DOCKER_HOST"        => "unix:///var/run/test.sock"
+      "DDNSSD_BACKEND" => "test_queue",
+      "DDNSSD_HOSTNAME" => "speccy",
+      "DOCKER_HOST" => "unix:///var/run/test.sock"
     }
   end
   let(:config) { DDNSSD::Config.new(env, logger: logger) }

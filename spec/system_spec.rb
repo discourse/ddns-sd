@@ -10,11 +10,11 @@ describe DDNSSD::System do
 
   let(:base_env) do
     {
-      "DDNSSD_HOSTNAME"        => "speccy",
-      "DDNSSD_BASE_DOMAIN"     => "example.com",
-      "DDNSSD_BACKEND"         => "test_queue",
+      "DDNSSD_HOSTNAME" => "speccy",
+      "DDNSSD_BASE_DOMAIN" => "example.com",
+      "DDNSSD_BACKEND" => "test_queue",
       "DDNSSD_HOST_IP_ADDRESS" => "192.0.2.42",
-      "DOCKER_HOST"            => "unix:///var/run/test.sock",
+      "DOCKER_HOST" => "unix:///var/run/test.sock",
     }
   end
   let(:env) { base_env }
