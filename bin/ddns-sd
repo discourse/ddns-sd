@@ -71,6 +71,18 @@ begin
     end
   end
 
+  if ENV['DDNSSD_CHECKPOINT_SECONDS']
+    interval = ENV['DDNSSD_CHECKPOINT_SECONDS'].to_i
+    if interval > 0
+      Thread.new do
+        loop do
+          sleep interval
+          sig_w.print 'C'
+        end
+      end
+    end
+  end
+
   system.run
 rescue DDNSSD::Config::InvalidEnvironmentError => ex
   $stderr.puts "F Invalid configuration: #{ex.message}"

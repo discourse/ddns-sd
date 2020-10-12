@@ -200,6 +200,14 @@ sensible default which works OK in at least some circumstances.
     an exposed port in the container. Otherwise a warning will be logged,
     but the service instance will be registered.
 
+* **`DDNSSD_CHECKPOINT_SECONDS`**
+
+    *Default*: `0`
+
+    If set to a positive integer value, then the service will reconcile the
+    expected v. existing records on that schedule. Otherwise it only happens
+    when the service is first started.
+
 Each DNS service plugin may also have its own configuration variables that
 can be used to configure backend-specific items; see the description of your
 chosen service backend under "Support DNS Services", below, for more
