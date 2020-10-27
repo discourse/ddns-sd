@@ -79,7 +79,7 @@ class DDNSSD::Backend::PowerDNS < DDNSSD::Backend
       end
 
       if @pg_conn
-        MiniSql::Connection.new(@pg_conn)
+        MiniSql::Connection.get(@pg_conn)
       else
         raise PGServerNotFound
       end

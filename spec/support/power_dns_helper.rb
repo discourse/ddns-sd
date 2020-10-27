@@ -27,7 +27,7 @@ module PowerDNSHelper
       password: 'dnsadminpw'
     )
 
-    conn = MiniSql::Connection.new(pg_conn)
+    conn = MiniSql::Connection.get(pg_conn)
 
     domain_id = conn.query_single(
       "SELECT id FROM domains WHERE name = ?",
