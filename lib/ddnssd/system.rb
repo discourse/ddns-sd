@@ -41,11 +41,7 @@ module DDNSSD
         @metrics_server.run
       end
 
-      if @config.host_dns_record
-        @backends.each { |backend| backend.publish_record(@config.host_dns_record) }
-      end
-
-      @backends.each { |backend| reconcile_containers(backend) }
+      reconcile_all
 
       loop do
         if @queue.empty?
@@ -100,6 +96,9 @@ module DDNSSD
           @containers.delete(id)
         when :reconcile_all
           @backends.each { |backend| reconcile_containers(backend) }
+          if @config.host_dns_record
+            @backends.each { |backend| backend.publish_record(@config.host_dns_record) }
+          end
         when :suppress_all
           @logger.info(progname) { "Withdrawing all DNS records..." }
           @backends.each do |backend|
