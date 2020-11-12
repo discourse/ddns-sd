@@ -1,6 +1,3 @@
--- CREATE USER pdns PASSWORD 'pdnspw';
--- CREATE USER dnsadmin PASSWORD 'dnsadminpw';
-
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 BEGIN;
