@@ -8,11 +8,24 @@ on:
 
 jobs:
   build:
+    env:
+      PGHOST: localhost
+      PGUSER: admin
+      PGPASSWORD: admin
     runs-on: ubuntu-latest
     name: Ruby ${{ matrix.ruby }}
     strategy:
       matrix:
         ruby: ["2.7", "2.6", "2.5"]
+    services:
+      postgres:
+        image: postgres:12
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin
+          POSTGRES_DB: admin
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-ruby@v1
@@ -31,6 +44,8 @@ jobs:
           gem install bundler -v 2.1.4
           bundle config path vendor/bundle
           bundle install --jobs 4
+      - name: Migrate DB
+        run: bundle exec rake test:prepare
       - name: Tests
         run: bundle exec rspec
       - name: Rubocop

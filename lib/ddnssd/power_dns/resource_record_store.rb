@@ -8,10 +8,10 @@ module DDNSSD
         @backend = backend
         @base_domain = base_domain
         @logger = logger
-        @domain_id = @backend.db.query(
-          "SELECT id FROM domains WHERE name = :domain_name",
+        @domain_id = @backend.db.query_single(
+          "SELECT id FROM domains WHERE name = :domain_name LIMIT 1",
           domain_name: @base_domain
-        ).first.id
+        ).first
       end
 
       def lookup(filters = {})
