@@ -8,17 +8,13 @@ module DDNSSD
         @backend = backend
         @base_domain = base_domain
         @logger = logger
-        @domain_id = @backend.db.query_single(
-          "SELECT id FROM domains WHERE name = :domain_name LIMIT 1",
-          domain_name: @base_domain
-        ).first
       end
 
       def lookup(filters = {})
         builder = @backend.db.build(
           "SELECT CAST(id AS TEXT), name, type, content, ttl FROM records /*where*/"
         )
-        builder.where("domain_id = ?", @domain_id)
+        builder.where("domain_id = (SELECT id FROM domains where name = ? LIMIT 1)", @base_domain)
         filters.select { |k| [:name, :type, :content].include?(k) }.each do |col, value|
           builder.where("#{col} = ?", col == :name ? value.downcase : value.to_s)
         end
@@ -29,17 +25,30 @@ module DDNSSD
         existing = lookup(
           name: dns_record.name, type: dns_record.type, content: dns_record.value
         )
+
         if existing.size == 0
-          @backend.db.exec(
-            "INSERT INTO records (domain_id, name, ttl, type, content, change_date)
-            VALUES (:domain_id, :name, :ttl, :type, :content, :change_date)",
-            domain_id: @domain_id,
+          args = {
+            base_domain: @base_domain,
             name: dns_record.name.downcase,
             ttl: dns_record.ttl,
             type: dns_record.type.to_s.upcase,
             content: dns_record.value,
             change_date: Time.now.to_i
-          )
+          }
+
+          count = @backend.db.exec(<<~SQL, args)
+            INSERT INTO records (domain_id, name, ttl, type, content, change_date)
+            SELECT id, :name, :ttl, :type, :content, :change_date
+            FROM domains
+            WHERE name = :base_domain
+            LIMIT 1
+          SQL
+
+          if count == 0
+            @logger.warn(progname) { "Base domain changed, Not adding. #{dns_record.inspect}" }
+          end
+
+          count
         else
           @logger.warn(progname) { "Record already exists. Not adding. #{dns_record.inspect}" }
           0
@@ -49,11 +58,11 @@ module DDNSSD
       def remove(dns_record)
         @backend.db.exec(
           "DELETE FROM records
-               WHERE domain_id = :domain_id
+               WHERE domain_id IN (SELECT id FROM domains WHERE name = :base_domain)
                  AND name = :name
                  AND type = :type
                  AND content = :content",
-          domain_id: @domain_id,
+          base_domain: @base_domain,
           name: dns_record.name,
           type: dns_record.type.to_s.upcase,
           content: dns_record.value
@@ -63,7 +72,7 @@ module DDNSSD
       def remove_with(name:, type:, content: nil)
         filters = { type: type&.to_s&.upcase, name: name, content: content }
         builder = @backend.db.build("DELETE FROM records /*where*/")
-        builder.where("domain_id = ?", @domain_id)
+        builder.where("domain_id IN (SELECT id FROM domains WHERE name = ?)", @base_domain)
         filters.each do |col, value|
           builder.where("#{col} = ?", value.to_s) if value
         end
@@ -87,9 +96,9 @@ module DDNSSD
         @backend.db.query(
           "SELECT name, ttl, type, content
              FROM records
-            WHERE domain_id = ?
+            WHERE domain_id in (SELECT id FROM domains WHERE name = ?)
               AND type IN (?)",
-          @domain_id,
+          @base_domain,
           %w{A AAAA SRV PTR TXT CNAME}
         )
       end
