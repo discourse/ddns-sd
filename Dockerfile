@@ -5,6 +5,7 @@ MAINTAINER Matt Palmer "matt.palmer@discourse.org"
 COPY Gemfile Gemfile.lock /home/ddnssd/
 
 RUN adduser -D ddnssd \
+	&& delgroup ping \
 	&& docker_group="$(getent group 999 | cut -d : -f 1)" \
 	&& if [ -z "$docker_group" ]; then addgroup -g 999 docker; docker_group=docker; fi \
 	&& addgroup ddnssd "$docker_group" \

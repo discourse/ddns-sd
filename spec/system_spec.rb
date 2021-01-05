@@ -436,8 +436,50 @@ describe DDNSSD::System do
       expect(system.instance_variable_get(:@containers).keys.sort).to eq(["asdfasdfexposed80", "asdfasdfpub80"])
     end
 
+    context "when nothing has changed" do
+      let(:dns_records) do
+        dns_record_fixtures(
+          "exposed_port80",
+          "published_port80",
+          "other_machine"
+        ) + [
+          DDNSSD::DNSRecord.new("example.com", 60, :NS, "ns1.example.com"),
+          DDNSSD::DNSRecord.new("speccy", 60, :A, "192.0.2.42"),
+        ]
+      end
+
+      let(:docker_containers) { container_fixtures("exposed_port80", "published_port80") }
+
+      it "doesn't publish records that already exist" do
+        dns_record_fixture("exposed_port80").each do |rr|
+          expect(mock_backend).not_to receive(:publish_record).with(eq(rr))
+        end
+
+        dns_record_fixture("published_port80").each do |rr|
+          expect(mock_backend).not_to receive(:publish_record).with(eq(rr))
+        end
+
+        system.send(:reconcile_containers, mock_backend)
+      end
+
+      it "doesn't delete the host dns record" do
+        expect(mock_backend).not_to receive(:suppress_record).with(eq(system.config.host_dns_record))
+        expect(mock_backend).not_to receive(:publish_record).with(eq(system.config.host_dns_record))
+        system.send(:reconcile_containers, mock_backend)
+      end
+    end
+
     context "when there's a new container" do
-      let(:dns_records) { dns_record_fixtures("exposed_port80", "other_machine") + [DDNSSD::DNSRecord.new("example.com", 60, :NS, "ns1.example.com")] }
+      let(:dns_records) do
+        dns_record_fixtures(
+          "exposed_port80",
+          "other_machine"
+        ) + [
+          DDNSSD::DNSRecord.new("example.com", 60, :NS, "ns1.example.com"),
+          DDNSSD::DNSRecord.new("speccy", 60, :A, "192.0.2.42"),
+        ]
+      end
+
       let(:docker_containers) { container_fixtures("exposed_port80", "published_port80") }
 
       it "adds records for the new container" do
@@ -450,14 +492,25 @@ describe DDNSSD::System do
     end
 
     context "when a container has been removed" do
-      let(:dns_records) { dns_record_fixtures("exposed_port80", "published_port80", "other_machine") }
+      let(:dns_records) do
+        dns_record_fixtures(
+          "exposed_port80",
+          "published_port80",
+          "other_machine"
+        ) + [
+          DDNSSD::DNSRecord.new("example.com", 60, :NS, "ns1.example.com"),
+          DDNSSD::DNSRecord.new("speccy", 60, :A, "192.0.2.42"),
+        ]
+      end
       let(:docker_containers) { container_fixtures("published_port80") }
 
       it "removes the records from the removed container" do
         dns_record_fixture("exposed_port80").each do |rr|
-          next if [Resolv::DNS::Resource::IN::TXT, Resolv::DNS::Resource::IN::PTR].include?(rr.data.class)
-
-          expect(mock_backend).to receive(:suppress_record).with(eq(rr))
+          if [Resolv::DNS::Resource::IN::TXT, Resolv::DNS::Resource::IN::PTR].include?(rr.data.class)
+            expect(mock_backend).not_to receive(:suppress_record).with(eq(rr))
+          else
+            expect(mock_backend).to receive(:suppress_record).with(eq(rr)).once
+          end
         end
 
         system.send(:reconcile_containers, mock_backend)
@@ -465,7 +518,14 @@ describe DDNSSD::System do
     end
 
     context "when a container has changed" do
-      let(:dns_records) { dns_record_fixtures("published_port80") }
+      let(:dns_records) do
+        dns_record_fixtures(
+          "published_port80",
+        ) + [
+          DDNSSD::DNSRecord.new("example.com", 60, :NS, "ns1.example.com"),
+          DDNSSD::DNSRecord.new("speccy", 60, :A, "192.0.2.42"),
+        ]
+      end
       let(:docker_containers) { container_fixtures("published_port80") }
 
       before(:each) do
@@ -476,9 +536,12 @@ describe DDNSSD::System do
       end
 
       it "removes the obsolete record and adds a new one" do
-        # There are TXT and PTR records that will be published, that we don't
-        # care so much about
-        allow(mock_backend).to receive(:publish_record).with(any_args)
+        dns_record_fixture("published_port80").each do |rr|
+          if [Resolv::DNS::Resource::IN::TXT, Resolv::DNS::Resource::IN::PTR].include?(rr.data.class)
+            expect(mock_backend).not_to receive(:suppress_record).with(eq(rr))
+            expect(mock_backend).not_to receive(:publish_record).with(eq(rr))
+          end
+        end
 
         expect(mock_backend)
           .to receive(:suppress_record)
@@ -498,9 +561,12 @@ describe DDNSSD::System do
 
       it "removes the records with the wrong TTL and adds new ones with the right TTL" do
         dns_record_fixture("published_port80").each do |rr|
-          next if [Resolv::DNS::Resource::IN::TXT, Resolv::DNS::Resource::IN::PTR].include?(rr.data.class)
-
-          expect(mock_backend).to receive(:suppress_record).with(eq(rr))
+          if [Resolv::DNS::Resource::IN::TXT, Resolv::DNS::Resource::IN::PTR].include?(rr.data.class)
+            expect(mock_backend).not_to receive(:suppress_record).with(eq(rr))
+            expect(mock_backend).not_to receive(:publish_record).with(eq(rr))
+          else
+            expect(mock_backend).to receive(:suppress_record).with(eq(rr))
+          end
         end
 
         dns_record_fixture("published_port80").each do |rr|

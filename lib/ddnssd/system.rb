@@ -96,9 +96,6 @@ module DDNSSD
           @containers.delete(id)
         when :reconcile_all
           @backends.each { |backend| reconcile_containers(backend) }
-          if @config.host_dns_record
-            @backends.each { |backend| backend.publish_record(@config.host_dns_record) }
-          end
         when :suppress_all
           @logger.info(progname) { "Withdrawing all DNS records..." }
           @backends.each do |backend|
@@ -154,21 +151,49 @@ module DDNSSD
 
       containers = @containers.values
 
-      our_live_records = backend.dns_records.select { |rr| our_record?(rr) }
-      our_desired_records = containers.map { |c| c.dns_records }.flatten(1)
+      existing_dns_records = backend.dns_records
 
-      @logger.info(progname) { "Found #{our_live_records.length} relevant DNS records." }
+      our_live_records = existing_dns_records.select { |rr| our_record?(rr) }
+      existing_txt_and_ptr_records = existing_dns_records.select do |rr|
+        rr.data.is_a?(Resolv::DNS::Resource::IN::PTR) ||
+          rr.data.is_a?(Resolv::DNS::Resource::IN::TXT)
+      end
+
+      our_desired_records = containers.map { |c| c.dns_records }.flatten(1).uniq
+
+      if @config.host_dns_record
+        our_desired_records << @config.host_dns_record
+      end
+
+      @logger.info(progname) do
+        [
+          "Total existing DNS records: #{existing_dns_records.length}.",
+          "Found #{our_live_records.length} relevant existing DNS records (excluding TXT and PTR).",
+          "Should have #{our_desired_records.length} DNS records (including TXT and PTR).",
+        ].join("\n")
+      end
+
       @logger.debug(progname) { (["Relevant DNS records:"] + our_live_records.map { |rr| "#{rr.name} #{rr.ttl} #{rr.type} #{rr.value}" }).join("\n  ") } unless our_live_records.empty?
-      @logger.info(progname) { "Should have #{our_desired_records.length} DNS records." }
       @logger.debug(progname) { (["Desired DNS records:"] + our_desired_records.map { |rr| "#{rr.name} #{rr.ttl} #{rr.type} #{rr.value}" }).join("\n  ") } unless our_desired_records.empty?
 
       # Delete any of "our" records that are no longer needed
-      @logger.info(progname) { "Deleting #{(our_live_records - our_desired_records).length} DNS records." }
-      (our_live_records - our_desired_records).each { |rr| backend.suppress_record(rr) }
+      records_to_delete = our_live_records - our_desired_records
+      @logger.info(progname) { "Deleting #{records_to_delete.length} DNS records." }
+      if records_to_delete.length > 0
+        @logger.debug(progname) { (["Deleting DNS records:"] + records_to_delete.map { |rr| "#{rr.name} #{rr.ttl} #{rr.type} #{rr.value}" }).join("\n  ") }
+      end
+      records_to_delete.each { |rr| backend.suppress_record(rr) }
 
-      # ... and create any new records we need
-      @logger.info(progname) { "Creating #{(our_desired_records - our_live_records).uniq.length} DNS records." }
-      (our_desired_records - our_live_records).uniq.each { |rr| backend.publish_record(rr) }
+      # Create any new records we need
+      records_to_create = (our_desired_records - our_live_records - existing_txt_and_ptr_records).uniq
+      @logger.info(progname) { "Creating #{records_to_create.length} DNS records." }
+      if records_to_create.length > 0
+        @logger.debug(progname) { (["Creating DNS records:"] + records_to_create.map { |rr| "#{rr.name} #{rr.ttl} #{rr.type} #{rr.value}" }).join("\n  ") }
+      end
+
+      records_to_create.each { |rr| backend.publish_record(rr) }
+
+      @logger.debug(progname) { "Reconcile is done." }
     end
 
     def our_record?(rr)
