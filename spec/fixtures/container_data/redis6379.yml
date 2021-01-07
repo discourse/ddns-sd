@@ -1,0 +1,17 @@
+Name: redis6379
+Config:
+  Labels:
+    org.discourse.service._redis.aliases: "specsite-redis-master"
+    org.discourse.service._redis.instance: "specsite"
+    org.discourse.service._redis.port: "6379"
+    org.discourse.service._redis.priority: "0"
+  ExposedPorts:
+    6379/tcp: {}
+NetworkSettings:
+  Ports:
+    6379/tcp: null
+  Gateway: 172.17.0.1
+  GlobalIPv6Address: '2001:db8::42'
+  IPAddress: 172.17.0.42
+id: asdredis6379
+

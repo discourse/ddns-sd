@@ -414,6 +414,7 @@ describe DDNSSD::System do
       allow(Docker::Container).to receive(:all).with({}, mock_conn).and_return(docker_containers)
       allow(Docker::Container).to receive(:get).with("asdfasdfpub80", {}, mock_conn).and_return(container_fixture("published_port80"))
       allow(Docker::Container).to receive(:get).with("asdfasdfexposed80", {}, mock_conn).and_return(container_fixture("exposed_port80"))
+      allow(Docker::Container).to receive(:get).with("asdredis6379", {}, mock_conn).and_return(container_fixture("redis6379"))
 
       expect(mock_backend).to receive(:dns_records).and_return(dns_records)
       allow(mock_backend).to receive(:publish_record)
@@ -441,6 +442,7 @@ describe DDNSSD::System do
         dns_record_fixtures(
           "exposed_port80",
           "published_port80",
+          "redis6379",
           "other_machine"
         ) + [
           DDNSSD::DNSRecord.new("example.com", 60, :NS, "ns1.example.com"),
@@ -448,7 +450,7 @@ describe DDNSSD::System do
         ]
       end
 
-      let(:docker_containers) { container_fixtures("exposed_port80", "published_port80") }
+      let(:docker_containers) { container_fixtures("exposed_port80", "published_port80", "redis6379") }
 
       it "doesn't publish records that already exist" do
         dns_record_fixture("exposed_port80").each do |rr|
@@ -467,6 +469,13 @@ describe DDNSSD::System do
         expect(mock_backend).not_to receive(:publish_record).with(eq(system.config.host_dns_record))
         system.send(:reconcile_containers, mock_backend)
       end
+
+      it "doesn't recreate cname records" do
+        cname_rr = dns_record_fixture("redis6379").find { |rr| rr.type == :CNAME }
+        expect(mock_backend).not_to receive(:suppress_record).with(eq(cname_rr))
+        expect(mock_backend).not_to receive(:publish_record).with(eq(cname_rr))
+        system.send(:reconcile_containers, mock_backend)
+      end
     end
 
     context "when there's a new container" do
@@ -480,10 +489,14 @@ describe DDNSSD::System do
         ]
       end
 
-      let(:docker_containers) { container_fixtures("exposed_port80", "published_port80") }
+      let(:docker_containers) { container_fixtures("exposed_port80", "published_port80", "redis6379") }
 
-      it "adds records for the new container" do
+      it "adds records for the new containers" do
         dns_record_fixture("published_port80").each do |rr|
+          expect(mock_backend).to receive(:publish_record).with(eq(rr)).ordered
+        end
+
+        dns_record_fixture("redis6379").each do |rr|
           expect(mock_backend).to receive(:publish_record).with(eq(rr)).ordered
         end
 

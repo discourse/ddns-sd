@@ -1,0 +1,5 @@
+- name: specsite-redis-master
+  type: :CNAME
+  ttl: 60
+  data:
+  - asdredis6379.speccy

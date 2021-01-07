@@ -154,9 +154,8 @@ module DDNSSD
       existing_dns_records = backend.dns_records
 
       our_live_records = existing_dns_records.select { |rr| our_record?(rr) }
-      existing_txt_and_ptr_records = existing_dns_records.select do |rr|
-        rr.data.is_a?(Resolv::DNS::Resource::IN::PTR) ||
-          rr.data.is_a?(Resolv::DNS::Resource::IN::TXT)
+      existing_not_our_records = existing_dns_records.select do |rr|
+        [:PTR, :TXT, :CNAME].include?(rr.type)
       end
 
       our_desired_records = containers.map { |c| c.dns_records }.flatten(1).uniq
@@ -185,7 +184,7 @@ module DDNSSD
       records_to_delete.each { |rr| backend.suppress_record(rr) }
 
       # Create any new records we need
-      records_to_create = (our_desired_records - our_live_records - existing_txt_and_ptr_records).uniq
+      records_to_create = (our_desired_records - our_live_records - existing_not_our_records).uniq
       @logger.info(progname) { "Creating #{records_to_create.length} DNS records." }
       if records_to_create.length > 0
         @logger.debug(progname) { (["Creating DNS records:"] + records_to_create.map { |rr| "#{rr.name} #{rr.ttl} #{rr.type} #{rr.value}" }).join("\n  ") }
